@@ -1,1 +1,908 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Olive Recruitment Dashboard — APEX Group</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark: #1e4d2b;
+    --green-mid: #2d7a45;
+    --green-light: #3fa05e;
+    --green-pale: #e8f5ed;
+    --green-xpale: #f3faf6;
+    --amber: #c97b1a;
+    --amber-pale: #fef3e2;
+    --red: #b33a3a;
+    --red-pale: #fdeaea;
+    --blue: #1a5fa8;
+    --blue-pale: #e8f0fb;
+    --gray-900: #1a1e23;
+    --gray-700: #3d4450;
+    --gray-500: #6b7585;
+    --gray-300: #c8cdd8;
+    --gray-100: #f0f2f5;
+    --gray-50: #f8f9fb;
+    --white: #ffffff;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --font: 'DM Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 14px; }
+  body { font-family: var(--font); background: var(--gray-100); color: var(--gray-900); min-height: 100vh; }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    background: var(--green-dark);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: var(--green-light);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 14px; color: #fff;
+  }
+  .logo-text { font-size: 15px; font-weight: 600; color: #fff; letter-spacing: 0.3px; }
+  .logo-text span { color: #7dd4a0; font-weight: 400; }
+  .topbar-right { display: flex; align-items: center; gap: 8px; }
+  .top-badge {
+    background: rgba(255,255,255,0.12);
+    color: #c5e8d2;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+  .top-user {
+    width: 32px; height: 32px;
+    background: var(--green-light);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600; color: #fff;
+    cursor: pointer;
+  }
+
+  /* ── FILTER BAR ── */
+  .filterbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-300);
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .filter-group { display: flex; align-items: center; gap: 6px; }
+  .filter-label { font-size: 11px; font-weight: 500; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; }
+  .filter-select, .filter-input {
+    font-family: var(--font);
+    font-size: 12px;
+    padding: 5px 10px;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-sm);
+    background: var(--gray-50);
+    color: var(--gray-900);
+    height: 30px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .filter-select:hover, .filter-input:hover { border-color: var(--green-mid); }
+  .filter-select:focus, .filter-input:focus { border-color: var(--green-mid); box-shadow: 0 0 0 2px rgba(45,122,69,0.12); }
+  .filter-divider { width: 1px; height: 20px; background: var(--gray-300); }
+  .btn {
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 14px;
+    height: 30px;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-sm);
+    background: var(--white);
+    color: var(--gray-700);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn:hover { background: var(--gray-50); border-color: var(--gray-500); }
+  .btn-primary {
+    background: var(--green-dark);
+    color: #fff;
+    border-color: var(--green-dark);
+  }
+  .btn-primary:hover { background: var(--green-mid); border-color: var(--green-mid); }
+  .btn-export {
+    background: #1d6c3e;
+    color: #fff;
+    border-color: #1d6c3e;
+    margin-left: auto;
+  }
+  .btn-export:hover { background: var(--green-mid); }
+  .btn-export svg { width: 13px; height: 13px; fill: #fff; }
+
+  /* ── BREADCRUMB ── */
+  .breadcrumb-bar {
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--gray-500);
+  }
+  .breadcrumb-bar a {
+    color: var(--green-mid);
+    text-decoration: none;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .breadcrumb-bar a:hover { text-decoration: underline; }
+  .breadcrumb-sep { color: var(--gray-300); font-size: 14px; }
+
+  /* ── MAIN CONTENT ── */
+  .main { padding: 0 24px 32px; }
+
+  /* ── SECTION NAV TABS ── */
+  .section-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid var(--gray-300);
+    margin-bottom: 18px;
+    overflow-x: auto;
+  }
+  .tab-btn {
+    font-family: var(--font);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 10px 18px;
+    border: none;
+    background: none;
+    color: var(--gray-500);
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.15s;
+  }
+  .tab-btn:hover { color: var(--green-mid); }
+  .tab-btn.active { color: var(--green-dark); border-bottom-color: var(--green-dark); font-weight: 600; }
+
+  /* ── DRILL BANNER ── */
+  .drill-banner {
+    background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 100%);
+    border-radius: var(--radius-md);
+    padding: 12px 18px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .drill-banner-title { font-size: 14px; font-weight: 600; color: #fff; }
+  .drill-banner-sub { font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 2px; }
+  .back-btn {
+    font-family: var(--font);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 5px 12px;
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.15s;
+  }
+  .back-btn:hover { background: rgba(255,255,255,0.25); }
+
+  /* ── METRIC GRID ── */
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 10px; margin-bottom: 18px; }
+  .kpi-card {
+    background: var(--white);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.15s;
+  }
+  .kpi-card:hover { box-shadow: var(--shadow-md); }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--gray-300);
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+  }
+  .kpi-card.green::before { background: var(--green-mid); }
+  .kpi-card.amber::before { background: var(--amber); }
+  .kpi-card.red::before { background: var(--red); }
+  .kpi-card.blue::before { background: var(--blue); }
+  .kpi-label { font-size: 10px; font-weight: 500; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 6px; }
+  .kpi-value { font-size: 24px; font-weight: 600; color: var(--gray-900); line-height: 1; font-family: var(--font-mono); }
+  .kpi-card.green .kpi-value { color: var(--green-dark); }
+  .kpi-card.amber .kpi-value { color: var(--amber); }
+  .kpi-card.red .kpi-value { color: var(--red); }
+  .kpi-card.blue .kpi-value { color: var(--blue); }
+  .kpi-sub { font-size: 10px; color: var(--gray-500); margin-top: 4px; }
+  .kpi-sub.up { color: var(--green-mid); }
+  .kpi-sub.down { color: var(--red); }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 14px;
+  }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--gray-900); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .card-title-note { font-size: 10px; font-weight: 400; color: var(--gray-500); }
+
+  /* ── TWO/THREE COL LAYOUT ── */
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  @media (max-width: 768px) { .row-2, .row-3 { grid-template-columns: 1fr; } }
+
+  /* ── TABLES ── */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead th {
+    text-align: left;
+    padding: 8px 10px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border-bottom: 1px solid var(--gray-300);
+    white-space: nowrap;
+    background: var(--gray-50);
+  }
+  tbody td { padding: 9px 10px; border-bottom: 1px solid var(--gray-100); color: var(--gray-700); white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr.clickable:hover td { background: var(--green-xpale); cursor: pointer; }
+  tbody tr.clickable:hover td:first-child { color: var(--green-dark); font-weight: 600; }
+  td.name-cell { font-weight: 500; color: var(--gray-900); }
+
+  /* ── BADGES ── */
+  .badge { display: inline-block; font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 20px; }
+  .badge-green { background: var(--green-pale); color: var(--green-dark); }
+  .badge-amber { background: var(--amber-pale); color: var(--amber); }
+  .badge-red { background: var(--red-pale); color: var(--red); }
+  .badge-blue { background: var(--blue-pale); color: var(--blue); }
+  .badge-gray { background: var(--gray-100); color: var(--gray-500); }
+
+  /* ── FUNNEL CHART ── */
+  .funnel-item { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+  .funnel-stage { font-size: 11px; color: var(--gray-500); width: 84px; flex-shrink: 0; text-align: right; }
+  .funnel-bar-track { flex: 1; background: var(--gray-100); border-radius: 4px; height: 24px; overflow: hidden; }
+  .funnel-bar-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; padding: 0 10px; font-size: 11px; font-weight: 500; color: #fff; transition: width 0.5s ease; }
+  .funnel-pct { font-size: 10px; color: var(--gray-500); width: 36px; flex-shrink: 0; text-align: right; font-family: var(--font-mono); }
+
+  /* ── BAR CHART ── */
+  .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 130px; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+  .bar-fill { width: 100%; border-radius: 4px 4px 0 0; transition: height 0.4s ease; }
+  .bar-num { font-size: 10px; font-weight: 600; color: var(--gray-700); font-family: var(--font-mono); }
+  .bar-name { font-size: 10px; color: var(--gray-500); text-align: center; }
+
+  /* ── OFFER ROWS ── */
+  .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--gray-100); font-size: 12px; }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-label { color: var(--gray-500); }
+  .stat-val { font-weight: 600; color: var(--gray-900); font-family: var(--font-mono); display: flex; align-items: center; gap: 6px; }
+
+  /* ── SECTION VISIBILITY ── */
+  .section { display: none; }
+  .section.active { display: block; }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--gray-100); }
+  ::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--gray-500); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .view.active { animation: fadeIn 0.2s ease; }
+  .section.active { animation: fadeIn 0.15s ease; }
+
+  /* ── PRINT / RESPONSIVE ── */
+  @media print {
+    .topbar, .filterbar, .btn { display: none !important; }
+    .card { box-shadow: none; border: 1px solid #ccc; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ TOP NAVIGATION BAR ══ -->
+<nav class="topbar">
+  <div class="logo">
+    <div class="logo-icon">O</div>
+    <div class="logo-text">OLIVE <span>Recruitment Dashboard</span></div>
+  </div>
+  <div class="topbar-right">
+    <div class="top-badge">APEX Group</div>
+    <div class="top-user">AB</div>
+  </div>
+</nav>
+
+<!-- ══ FILTER BAR ══ -->
+<div class="filterbar">
+  <div class="filter-group">
+    <span class="filter-label">Period</span>
+    <select class="filter-select" id="periodType" onchange="updatePeriod()">
+      <option value="monthly">Monthly</option>
+      <option value="quarterly" selected>Quarterly</option>
+      <option value="yearly">Yearly</option>
+      <option value="custom">Custom Range</option>
+    </select>
+    <select class="filter-select" id="periodSelect">
+      <option>Q1 2025</option>
+      <option selected>Q2 2025</option>
+      <option>Q3 2025</option>
+      <option>Q4 2025</option>
+    </select>
+    <input type="date" class="filter-input" id="fromDate" value="2025-01-01" style="display:none">
+    <span id="dateSep" style="font-size:11px;color:var(--gray-500);display:none">to</span>
+    <input type="date" class="filter-input" id="toDate" value="2025-03-31" style="display:none">
+  </div>
+  <div class="filter-divider"></div>
+  <div class="filter-group">
+    <span class="filter-label">Company</span>
+    <select class="filter-select" id="companyFilter" onchange="onCompanyFilter()">
+      <option value="all">All Companies</option>
+      <option value="alpha">Alpha Corp</option>
+      <option value="beta">Beta Industries</option>
+      <option value="gamma">Gamma Solutions</option>
+      <option value="delta">Delta Services</option>
+    </select>
+  </div>
+  <div class="filter-divider"></div>
+  <div class="filter-group">
+    <span class="filter-label">Status</span>
+    <select class="filter-select">
+      <option>All Status</option>
+      <option>Active</option>
+      <option>Closed</option>
+    </select>
+  </div>
+  <button class="btn btn-export" onclick="exportData()">
+    <svg viewBox="0 0 20 20"><path d="M3 17h14v-2H3v2zM10 3L5 8h4v6h2V8h4l-5-5z"/></svg>
+    Export Excel
+  </button>
+</div>
+
+<!-- ══ BREADCRUMB ══ -->
+<div class="breadcrumb-bar" id="breadcrumb">
+  <a onclick="goHome()">APEX Group</a>
+</div>
+
+<!-- ══ MAIN CONTENT ══ -->
+<div class="main">
+
+  <!-- ═══ GROUP VIEW ═══ -->
+  <div class="view active" id="groupView">
+
+    <!-- Section Tabs -->
+    <div class="section-tabs">
+      <button class="tab-btn active" onclick="showSection('summary', this)">Overview</button>
+      <button class="tab-btn" onclick="showSection('companies', this)">Company Breakdown</button>
+      <button class="tab-btn" onclick="showSection('mpr', this)">MPR Analysis</button>
+      <button class="tab-btn" onclick="showSection('vacancy', this)">Vacancy Status</button>
+      <button class="tab-btn" onclick="showSection('pipeline', this)">Candidate Pipeline</button>
+      <button class="tab-btn" onclick="showSection('offers', this)">Offer Management</button>
+      <button class="tab-btn" onclick="showSection('agency', this)">Agency Performance</button>
+    </div>
+
+    <!-- ── Overview ── -->
+    <div class="section active" id="sec-summary">
+      <div class="kpi-grid">
+        <div class="kpi-card blue"><div class="kpi-label">Total MPR Requests</div><div class="kpi-value">248</div><div class="kpi-sub up">↑ 12% vs last period</div></div>
+        <div class="kpi-card green"><div class="kpi-label">Approved MPR</div><div class="kpi-value">189</div><div class="kpi-sub">76% approval rate</div></div>
+        <div class="kpi-card amber"><div class="kpi-label">Pending MPR</div><div class="kpi-value">59</div><div class="kpi-sub">Awaiting approval</div></div>
+        <div class="kpi-card blue"><div class="kpi-label">Vacancies Created</div><div class="kpi-value">312</div><div class="kpi-sub">This period</div></div>
+        <div class="kpi-card green"><div class="kpi-label">Vacancies Filled</div><div class="kpi-value">198</div><div class="kpi-sub">63% fill rate</div></div>
+        <div class="kpi-card amber"><div class="kpi-label">Open Vacancies</div><div class="kpi-value">114</div><div class="kpi-sub">37% still open</div></div>
+        <div class="kpi-card blue"><div class="kpi-label">Candidates Registered</div><div class="kpi-value">1,847</div><div class="kpi-sub">All sources</div></div>
+        <div class="kpi-card"><div class="kpi-label">Shortlisted</div><div class="kpi-value">553</div><div class="kpi-sub">30% shortlist rate</div></div>
+        <div class="kpi-card"><div class="kpi-label">Interviewed</div><div class="kpi-value">420</div><div class="kpi-sub">76% of shortlisted</div></div>
+        <div class="kpi-card green"><div class="kpi-label">Selected</div><div class="kpi-value">312</div><div class="kpi-sub">17% selection ratio</div></div>
+        <div class="kpi-card green"><div class="kpi-label">Offers Accepted</div><div class="kpi-value">267</div><div class="kpi-sub">85% acceptance</div></div>
+        <div class="kpi-card red"><div class="kpi-label">Offers Declined</div><div class="kpi-value">45</div><div class="kpi-sub down">↑ 15% decline rate</div></div>
+        <div class="kpi-card green"><div class="kpi-label">Joined / Onboarded</div><div class="kpi-value">241</div><div class="kpi-sub">90% join rate</div></div>
+      </div>
+      <div class="row-2">
+        <div class="card">
+          <div class="card-title">MPR Status Snapshot</div>
+          <div class="stat-row"><span class="stat-label">Total MPR Raised</span><span class="stat-val">248</span></div>
+          <div class="stat-row"><span class="stat-label">Approved</span><span class="stat-val" style="color:var(--green-mid)">189 <span class="badge badge-green">76%</span></span></div>
+          <div class="stat-row"><span class="stat-label">Pending Approval</span><span class="stat-val" style="color:var(--amber)">59 <span class="badge badge-amber">24%</span></span></div>
+          <div class="stat-row"><span class="stat-label">Highest MPR raised by</span><span class="stat-val">Alpha Corp</span></div>
+          <div class="stat-row"><span class="stat-label">Most pending in</span><span class="stat-val" style="color:var(--red)">Delta Services</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Candidate Flow Summary</div>
+          <div class="funnel-item">
+            <span class="funnel-stage">Registered</span>
+            <div class="funnel-bar-track"><div class="funnel-bar-fill" style="width:100%;background:#1a5fa8">1,847</div></div>
+            <span class="funnel-pct">100%</span>
+          </div>
+          <div class="funnel-item">
+            <span class="funnel-stage">Shortlisted</span>
+            <div class="funnel-bar-track"><div class="funnel-bar-fill" style="width:30%;background:#2d7a45">553</div></div>
+            <span class="funnel-pct">30%</span>
+          </div>
+          <div class="funnel-item">
+            <span class="funnel-stage">Selected</span>
+            <div class="funnel-bar-track"><div class="funnel-bar-fill" style="width:17%;background:#3fa05e">312</div></div>
+            <span class="funnel-pct">17%</span>
+          </div>
+          <div class="funnel-item">
+            <span class="funnel-stage">Joined</span>
+            <div class="funnel-bar-track"><div class="funnel-bar-fill" style="width:13%;background:#1e4d2b">241</div></div>
+            <span class="funnel-pct">13%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Company Breakdown ── -->
+    <div class="section" id="sec-companies">
+      <div class="card">
+        <div class="card-title">Company-wise Recruitment Breakdown <span class="card-title-note">— click any row to drill down</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Company</th><th>MPR Raised</th><th>Approved</th><th>Pending</th>
+                <th>Vacancies</th><th>Candidates</th><th>Shortlisted</th>
+                <th>Selected</th><th>Rejected</th><th>Offers Sent</th><th>Accepted</th><th>Fill Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="clickable" onclick="drillDown('alpha','Alpha Corp')">
+                <td class="name-cell">Alpha Corp</td><td>78</td><td>61</td><td>17</td><td>94</td><td>542</td><td>162</td><td>94</td><td>88</td><td>94</td><td>80</td><td><span class="badge badge-green">85%</span></td>
+              </tr>
+              <tr class="clickable" onclick="drillDown('beta','Beta Industries')">
+                <td class="name-cell">Beta Industries</td><td>62</td><td>48</td><td>14</td><td>76</td><td>421</td><td>126</td><td>76</td><td>71</td><td>76</td><td>65</td><td><span class="badge badge-green">78%</span></td>
+              </tr>
+              <tr class="clickable" onclick="drillDown('gamma','Gamma Solutions')">
+                <td class="name-cell">Gamma Solutions</td><td>55</td><td>42</td><td>13</td><td>68</td><td>489</td><td>147</td><td>68</td><td>62</td><td>68</td><td>58</td><td><span class="badge badge-amber">62%</span></td>
+              </tr>
+              <tr class="clickable" onclick="drillDown('delta','Delta Services')">
+                <td class="name-cell">Delta Services</td><td>53</td><td>38</td><td>15</td><td>74</td><td>395</td><td>118</td><td>74</td><td>65</td><td>74</td><td>64</td><td><span class="badge badge-amber">55%</span></td>
+              </tr>
+              <tr style="background:var(--gray-50)">
+                <td style="font-weight:600;color:var(--gray-900)">APEX Total</td>
+                <td style="font-weight:600">248</td><td style="font-weight:600;color:var(--green-dark)">189</td>
+                <td style="font-weight:600;color:var(--amber)">59</td>
+                <td style="font-weight:600">312</td><td style="font-weight:600">1,847</td>
+                <td style="font-weight:600">553</td><td style="font-weight:600">312</td>
+                <td style="font-weight:600">286</td><td style="font-weight:600">312</td>
+                <td style="font-weight:600">267</td><td><span class="badge badge-green">85%</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MPR Analysis ── -->
+    <div class="section" id="sec-mpr">
+      <div class="row-2">
+        <div class="card">
+          <div class="card-title">MPR Approval Rate by Company</div>
+          <div class="bar-chart">
+            <div class="bar-col"><div class="bar-num">78%</div><div class="bar-fill" style="height:78%;background:#2d7a45"></div><div class="bar-name">Alpha</div></div>
+            <div class="bar-col"><div class="bar-num">77%</div><div class="bar-fill" style="height:77%;background:#3fa05e"></div><div class="bar-name">Beta</div></div>
+            <div class="bar-col"><div class="bar-num">76%</div><div class="bar-fill" style="height:76%;background:#c97b1a"></div><div class="bar-name">Gamma</div></div>
+            <div class="bar-col"><div class="bar-num">72%</div><div class="bar-fill" style="height:72%;background:#b33a3a"></div><div class="bar-name">Delta</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">MPR Status Summary</div>
+          <div class="stat-row"><span class="stat-label">Total MPR Requests</span><span class="stat-val">248</span></div>
+          <div class="stat-row"><span class="stat-label">Approved</span><span class="stat-val" style="color:var(--green-mid)">189 <span class="badge badge-green">76%</span></span></div>
+          <div class="stat-row"><span class="stat-label">Pending Approval</span><span class="stat-val" style="color:var(--amber)">59 <span class="badge badge-amber">24%</span></span></div>
+          <div class="stat-row"><span class="stat-label">Highest MPR Raised</span><span class="stat-val">Alpha Corp (78)</span></div>
+          <div class="stat-row"><span class="stat-label">Most Pending</span><span class="stat-val" style="color:var(--red)">Delta Services (15)</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Company-wise MPR Detail</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Company</th><th>MPR Raised</th><th>Approved</th><th>Pending</th><th>Approval Rate</th><th>Trend</th></tr></thead>
+            <tbody>
+              <tr><td class="name-cell">Alpha Corp</td><td>78</td><td>61</td><td>17</td><td><span class="badge badge-green">78%</span></td><td style="color:var(--green-mid);font-weight:500">↑ Improving</td></tr>
+              <tr><td class="name-cell">Beta Industries</td><td>62</td><td>48</td><td>14</td><td><span class="badge badge-green">77%</span></td><td style="color:var(--green-mid);font-weight:500">↑ Stable</td></tr>
+              <tr><td class="name-cell">Gamma Solutions</td><td>55</td><td>42</td><td>13</td><td><span class="badge badge-amber">76%</span></td><td style="color:var(--amber);font-weight:500">→ Flat</td></tr>
+              <tr><td class="name-cell">Delta Services</td><td>53</td><td>38</td><td>15</td><td><span class="badge badge-red">72%</span></td><td style="color:var(--red);font-weight:500">↓ Declining</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Vacancy Status ── -->
+    <div class="section" id="sec-vacancy">
+      <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="kpi-card blue"><div class="kpi-label">Total Vacancies Created</div><div class="kpi-value">312</div></div>
+        <div class="kpi-card green"><div class="kpi-label">Filled</div><div class="kpi-value">198</div><div class="kpi-sub">63% fill rate</div></div>
+        <div class="kpi-card amber"><div class="kpi-label">Open / Pending</div><div class="kpi-value">114</div><div class="kpi-sub">37% still open</div></div>
+      </div>
+      <div class="row-2">
+        <div class="card">
+          <div class="card-title">Vacancy Status by Company</div>
+          <div class="bar-chart">
+            <div class="bar-col"><div class="bar-num">85%</div><div class="bar-fill" style="height:85%;background:#2d7a45"></div><div class="bar-name">Alpha</div></div>
+            <div class="bar-col"><div class="bar-num">79%</div><div class="bar-fill" style="height:79%;background:#3fa05e"></div><div class="bar-name">Beta</div></div>
+            <div class="bar-col"><div class="bar-num">62%</div><div class="bar-fill" style="height:62%;background:#c97b1a"></div><div class="bar-name">Gamma</div></div>
+            <div class="bar-col"><div class="bar-num">55%</div><div class="bar-fill" style="height:55%;background:#b33a3a"></div><div class="bar-name">Delta</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Vacancy Insights</div>
+          <div class="stat-row"><span class="stat-label">Best closure rate</span><span class="stat-val" style="color:var(--green-dark)">Alpha Corp — 85%</span></div>
+          <div class="stat-row"><span class="stat-label">Highest open vacancies</span><span class="stat-val" style="color:var(--red)">Delta Services — 33 open</span></div>
+          <div class="stat-row"><span class="stat-label">Needs attention</span><span class="stat-val" style="color:var(--amber)">Gamma Solutions — 62%</span></div>
+          <div class="stat-row"><span class="stat-label">Avg. time to fill</span><span class="stat-val">28 days</span></div>
+          <div class="stat-row"><span class="stat-label">Fastest fill</span><span class="stat-val" style="color:var(--green-dark)">Alpha Corp — 22 days</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Pipeline ── -->
+    <div class="section" id="sec-pipeline">
+      <div class="card">
+        <div class="card-title">Candidate Pipeline — Full Flow</div>
+        <div class="funnel-item">
+          <span class="funnel-stage">Registered</span>
+          <div class="funnel-bar-track"><div class="funnel-bar-fill" style="width:100%;background:#1a5fa8">1,847</div></div>
+          <span class="funnel-pct">100%</span>
+        </div>
+        <div class="funnel-item">
+          <span class="funnel-stage">Shortlisted</span>
+          <div class="funnel-bar-track"><div class="funnel-bar-fill" style="width:30%;background:#2d7a45">553</div></div>
+          <span class="funnel-pct">30%</span>
+        </div>
+        <div class="funnel-item">
+          <span class="funnel-stage">Interviewed</span>
+          <div class="funnel-bar-track"><div class="funnel-bar-fill" style="width:23%;background:#3fa05e">420</div></div>
+          <span class="funnel-pct">23%</span>
+        </div>
+        <div class="funnel-item">
+          <span class="funnel-stage">Selected</span>
+          <div class="funnel-bar-track"><div class="funnel-bar-fill" style="width:17%;background:#c97b1a">312</div></div>
+          <span class="funnel-pct">17%</span>
+        </div>
+        <div class="funnel-item">
+          <span class="funnel-stage">Offered</span>
+          <div class="funnel-bar-track"><div class="funnel-bar-fill" style="width:16%;background:#854F0B">294</div></div>
+          <span class="funnel-pct">16%</span>
+        </div>
+        <div class="funnel-item">
+          <span class="funnel-stage">Joined</span>
+          <div class="funnel-bar-track"><div class="funnel-bar-fill" style="width:13%;background:#1e4d2b">241</div></div>
+          <span class="funnel-pct">13%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Offers ── -->
+    <div class="section" id="sec-offers">
+      <div class="row-2">
+        <div class="card">
+          <div class="card-title">Offer Management Summary</div>
+          <div class="stat-row"><span class="stat-label">Offers Generated</span><span class="stat-val">312</span></div>
+          <div class="stat-row"><span class="stat-label">Accepted</span><span class="stat-val" style="color:var(--green-mid)">267 <span class="badge badge-green">85%</span></span></div>
+          <div class="stat-row"><span class="stat-label">Declined</span><span class="stat-val" style="color:var(--red)">45 <span class="badge badge-red">14%</span></span></div>
+          <div class="stat-row"><span class="stat-label">Pending Response</span><span class="stat-val" style="color:var(--amber)">18 <span class="badge badge-amber">6%</span></span></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Offer Acceptance by Company</div>
+          <div class="bar-chart">
+            <div class="bar-col"><div class="bar-num">85%</div><div class="bar-fill" style="height:85%;background:#2d7a45"></div><div class="bar-name">Alpha</div></div>
+            <div class="bar-col"><div class="bar-num">86%</div><div class="bar-fill" style="height:86%;background:#3fa05e"></div><div class="bar-name">Beta</div></div>
+            <div class="bar-col"><div class="bar-num">85%</div><div class="bar-fill" style="height:85%;background:#2d7a45"></div><div class="bar-name">Gamma</div></div>
+            <div class="bar-col"><div class="bar-num">86%</div><div class="bar-fill" style="height:86%;background:#3fa05e"></div><div class="bar-name">Delta</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Agency Performance ── -->
+    <div class="section" id="sec-agency">
+      <div class="card">
+        <div class="card-title">Agency Performance Summary</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Agency Name</th><th>Candidates Submitted</th><th>Shortlisted</th><th>Selected</th><th>Rejected</th><th>Selection Ratio</th><th>Rating</th></tr></thead>
+            <tbody>
+              <tr><td class="name-cell">Talent Bridge</td><td>320</td><td>148</td><td>89</td><td>231</td><td><span class="badge badge-green">28%</span></td><td style="color:var(--green-mid);font-weight:500">★★★★★</td></tr>
+              <tr><td class="name-cell">HireEdge Solutions</td><td>285</td><td>112</td><td>62</td><td>223</td><td><span class="badge badge-green">22%</span></td><td style="color:var(--green-mid);font-weight:500">★★★★☆</td></tr>
+              <tr><td class="name-cell">Apex Talent Network</td><td>241</td><td>98</td><td>48</td><td>193</td><td><span class="badge badge-amber">20%</span></td><td style="color:var(--amber);font-weight:500">★★★☆☆</td></tr>
+              <tr><td class="name-cell">Recruit Pro</td><td>198</td><td>67</td><td>29</td><td>169</td><td><span class="badge badge-amber">15%</span></td><td style="color:var(--amber);font-weight:500">★★★☆☆</td></tr>
+              <tr><td class="name-cell">Global Staffers</td><td>156</td><td>42</td><td>14</td><td>142</td><td><span class="badge badge-red">9%</span></td><td style="color:var(--red);font-weight:500">★★☆☆☆</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end groupView -->
+
+  <!-- ═══ COMPANY DRILL-DOWN VIEW ═══ -->
+  <div class="view" id="companyView">
+    <div class="drill-banner">
+      <div>
+        <div class="drill-banner-title" id="drillTitle"></div>
+        <div class="drill-banner-sub" id="drillSub"></div>
+      </div>
+      <button class="back-btn" onclick="goHome()">&#8592; Back to APEX Group</button>
+    </div>
+    <div class="kpi-grid" id="co-kpis"></div>
+    <div class="row-2">
+      <div class="card">
+        <div class="card-title">Candidate Pipeline</div>
+        <div id="co-funnel"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Offer Status</div>
+        <div id="co-offers"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Department-wise Breakdown <span class="card-title-note">— click to drill into a department</span></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Department</th><th>Vacancies</th><th>Candidates</th><th>Selected</th><th>Offers Sent</th><th>Joined</th><th>Fill Rate</th><th>Status</th></tr></thead>
+          <tbody id="co-dept-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ DEPARTMENT DRILL-DOWN VIEW ═══ -->
+  <div class="view" id="deptView">
+    <div class="drill-banner">
+      <div>
+        <div class="drill-banner-title" id="deptTitle"></div>
+        <div class="drill-banner-sub" id="deptSub">Department-level recruitment breakdown</div>
+      </div>
+      <button class="back-btn" onclick="backToCompany()">&#8592; Back to Company</button>
+    </div>
+    <div class="kpi-grid" id="dept-kpis"></div>
+    <div class="card">
+      <div class="card-title">Job Title-wise Breakdown</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Job Title</th><th>Vacancies</th><th>Candidates</th><th>Shortlisted</th><th>Selected</th><th>Joined</th><th>Status</th></tr></thead>
+          <tbody id="dept-job-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end main -->
+
+<script>
+const DB = {
+  alpha: {
+    name: 'Alpha Corp', period: 'Q2 2025',
+    mpr:78, mprA:61, mprP:17, vac:94, fill:80, open:14, cand:542, sel:94, rej:88,
+    depts: [
+      {name:'Engineering', vac:32, cand:180, sel:32, off:32, join:29, rate:'91%', status:'green'},
+      {name:'Operations',  vac:24, cand:140, sel:24, off:24, join:22, rate:'88%', status:'green'},
+      {name:'Finance',     vac:18, cand:120, sel:18, off:18, join:16, rate:'75%', status:'amber'},
+      {name:'HR & Admin',  vac:12, cand:62,  sel:12, off:12, join:10, rate:'83%', status:'green'},
+      {name:'Sales',       vac:8,  cand:40,  sel:8,  off:8,  join:7,  rate:'70%', status:'amber'},
+    ]
+  },
+  beta: {
+    name: 'Beta Industries', period: 'Q2 2025',
+    mpr:62, mprA:48, mprP:14, vac:76, fill:60, open:16, cand:421, sel:76, rej:71,
+    depts: [
+      {name:'Manufacturing', vac:28, cand:150, sel:28, off:28, join:25, rate:'89%', status:'green'},
+      {name:'Quality',       vac:18, cand:90,  sel:18, off:18, join:16, rate:'85%', status:'green'},
+      {name:'IT',            vac:16, cand:100, sel:16, off:16, join:14, rate:'79%', status:'amber'},
+      {name:'Logistics',     vac:14, cand:81,  sel:14, off:14, join:12, rate:'65%', status:'amber'},
+    ]
+  },
+  gamma: {
+    name: 'Gamma Solutions', period: 'Q2 2025',
+    mpr:55, mprA:42, mprP:13, vac:68, fill:42, open:26, cand:489, sel:68, rej:62,
+    depts: [
+      {name:'Technology',  vac:26, cand:200, sel:26, off:26, join:22, rate:'85%', status:'green'},
+      {name:'Consulting',  vac:22, cand:160, sel:22, off:22, join:18, rate:'72%', status:'amber'},
+      {name:'Support',     vac:12, cand:80,  sel:12, off:12, join:10, rate:'50%', status:'red'},
+      {name:'Admin',       vac:8,  cand:49,  sel:8,  off:8,  join:7,  rate:'80%', status:'green'},
+    ]
+  },
+  delta: {
+    name: 'Delta Services', period: 'Q2 2025',
+    mpr:53, mprA:38, mprP:15, vac:74, fill:41, open:33, cand:395, sel:74, rej:65,
+    depts: [
+      {name:'Customer Svc', vac:30, cand:160, sel:30, off:30, join:26, rate:'70%', status:'amber'},
+      {name:'Sales',        vac:22, cand:120, sel:22, off:22, join:19, rate:'55%', status:'red'},
+      {name:'Operations',   vac:14, cand:75,  sel:14, off:14, join:12, rate:'60%', status:'amber'},
+      {name:'Marketing',    vac:8,  cand:40,  sel:8,  off:8,  join:7,  rate:'88%', status:'green'},
+    ]
+  }
+};
+
+let currentCo = null, currentDeptIdx = null;
+
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function updatePeriod() {
+  const v = document.getElementById('periodType').value;
+  const ps = document.getElementById('periodSelect');
+  const fd = document.getElementById('fromDate');
+  const td = document.getElementById('toDate');
+  const sep = document.getElementById('dateSep');
+  if (v === 'custom') { fd.style.display=''; td.style.display=''; sep.style.display=''; ps.style.display='none'; }
+  else { fd.style.display='none'; td.style.display='none'; sep.style.display='none'; ps.style.display=''; }
+  if (v === 'monthly') ps.innerHTML = '<option>Jan 2025</option><option>Feb 2025</option><option>Mar 2025</option><option selected>Apr 2025</option>';
+  else if (v === 'quarterly') ps.innerHTML = '<option>Q1 2025</option><option selected>Q2 2025</option><option>Q3 2025</option><option>Q4 2025</option>';
+  else if (v === 'yearly') ps.innerHTML = '<option>2023</option><option>2024</option><option selected>2025</option>';
+}
+
+function onCompanyFilter() {
+  const v = document.getElementById('companyFilter').value;
+  if (v !== 'all') drillDown(v, DB[v].name);
+  else goHome();
+}
+
+function drillDown(key, name) {
+  currentCo = key;
+  const d = DB[key];
+  document.getElementById('drillTitle').textContent = name + ' — Recruitment Detail';
+  document.getElementById('drillSub').textContent = 'Reporting period: ' + d.period;
+
+  // KPIs
+  const fillRate = Math.round(d.fill / d.vac * 100);
+  document.getElementById('co-kpis').innerHTML = `
+    <div class="kpi-card blue"><div class="kpi-label">MPR Raised</div><div class="kpi-value">${d.mpr}</div></div>
+    <div class="kpi-card green"><div class="kpi-label">MPR Approved</div><div class="kpi-value">${d.mprA}</div><div class="kpi-sub">${Math.round(d.mprA/d.mpr*100)}% rate</div></div>
+    <div class="kpi-card amber"><div class="kpi-label">MPR Pending</div><div class="kpi-value">${d.mprP}</div></div>
+    <div class="kpi-card blue"><div class="kpi-label">Vacancies</div><div class="kpi-value">${d.vac}</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Filled</div><div class="kpi-value">${d.fill}</div><div class="kpi-sub">${fillRate}% fill rate</div></div>
+    <div class="kpi-card amber"><div class="kpi-label">Open</div><div class="kpi-value">${d.open}</div></div>
+    <div class="kpi-card blue"><div class="kpi-label">Candidates</div><div class="kpi-value">${d.cand.toLocaleString()}</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Selected</div><div class="kpi-value">${d.sel}</div></div>
+    <div class="kpi-card red"><div class="kpi-label">Rejected</div><div class="kpi-value">${d.rej}</div></div>
+  `;
+
+  // Pipeline funnel
+  const stages = [['Registered',d.cand,100],['Shortlisted',Math.round(d.cand*0.3),30],['Interviewed',Math.round(d.cand*0.23),23],['Selected',d.sel,Math.round(d.sel/d.cand*100)],['Offered',d.vac,Math.round(d.vac/d.cand*100)],['Joined',d.fill,Math.round(d.fill/d.cand*100)]];
+  const colors = ['#1a5fa8','#2d7a45','#3fa05e','#c97b1a','#854F0B','#1e4d2b'];
+  document.getElementById('co-funnel').innerHTML = stages.map((s,i) => `
+    <div class="funnel-item">
+      <span class="funnel-stage">${s[0]}</span>
+      <div class="funnel-bar-track"><div class="funnel-bar-fill" style="width:${Math.max(s[2],5)}%;background:${colors[i]}">${s[1].toLocaleString()}</div></div>
+      <span class="funnel-pct">${s[2]}%</span>
+    </div>`).join('');
+
+  // Offers
+  const acc = Math.round(d.vac * 0.85);
+  const dec = d.vac - acc;
+  document.getElementById('co-offers').innerHTML = `
+    <div class="stat-row"><span class="stat-label">Offers Generated</span><span class="stat-val">${d.vac}</span></div>
+    <div class="stat-row"><span class="stat-label">Accepted</span><span class="stat-val" style="color:var(--green-mid)">${acc} <span class="badge badge-green">85%</span></span></div>
+    <div class="stat-row"><span class="stat-label">Declined</span><span class="stat-val" style="color:var(--red)">${dec} <span class="badge badge-red">15%</span></span></div>
+    <div class="stat-row"><span class="stat-label">Pending</span><span class="stat-val" style="color:var(--amber)">3 <span class="badge badge-amber"></span></span></div>
+  `;
+
+  // Departments
+  const badgeMap = {green:'badge-green', amber:'badge-amber', red:'badge-red'};
+  const labelMap = {green:'On Track', amber:'Review', red:'Attention'};
+  document.getElementById('co-dept-body').innerHTML = d.depts.map((dep, i) => `
+    <tr class="clickable" onclick="drillDept(${i})">
+      <td class="name-cell">${dep.name}</td>
+      <td>${dep.vac}</td><td>${dep.cand}</td><td>${dep.sel}</td>
+      <td>${dep.off}</td><td>${dep.join}</td>
+      <td>${dep.rate}</td>
+      <td><span class="badge ${badgeMap[dep.status]}">${labelMap[dep.status]}</span></td>
+    </tr>`).join('');
+
+  setBreadcrumb([{label:'APEX Group',fn:'goHome()'},{label:name}]);
+  showView('companyView');
+  document.getElementById('companyFilter').value = key;
+}
+
+function drillDept(idx) {
+  currentDeptIdx = idx;
+  const d = DB[currentCo];
+  const dep = d.depts[idx];
+  document.getElementById('deptTitle').textContent = d.name + ' — ' + dep.name + ' Department';
+  document.getElementById('dept-kpis').innerHTML = `
+    <div class="kpi-card blue"><div class="kpi-label">Vacancies</div><div class="kpi-value">${dep.vac}</div></div>
+    <div class="kpi-card blue"><div class="kpi-label">Candidates</div><div class="kpi-value">${dep.cand}</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Selected</div><div class="kpi-value">${dep.sel}</div></div>
+    <div class="kpi-card amber"><div class="kpi-label">Offers Sent</div><div class="kpi-value">${dep.off}</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Joined</div><div class="kpi-value">${dep.join}</div></div>
+    <div class="kpi-card ${dep.status==='green'?'green':dep.status==='amber'?'amber':'red'}"><div class="kpi-label">Fill Rate</div><div class="kpi-value">${dep.rate}</div></div>
+  `;
+
+  const jobs = ['Senior Manager','Manager','Team Lead','Senior Executive','Executive','Associate'];
+  let rem = dep.vac;
+  document.getElementById('dept-job-body').innerHTML = jobs.slice(0, Math.min(dep.vac, jobs.length)).map((j,i) => {
+    const v = i === jobs.length-1 ? Math.max(rem,1) : Math.max(1, Math.round(dep.vac*(0.22-i*0.02)));
+    rem = Math.max(0, rem - v);
+    const c = Math.round(v*5.5); const sh = Math.round(c*0.28); const s = v; const jn = Math.round(v*0.87);
+    const st = i<2 ? 'badge-green' : i<4 ? 'badge-amber' : 'badge-red';
+    const stlbl = i<2 ? 'Filled' : i<4 ? 'In Progress' : 'Open';
+    return `<tr><td class="name-cell">${j}</td><td>${v}</td><td>${c}</td><td>${sh}</td><td>${s}</td><td>${jn}</td><td><span class="badge ${st}">${stlbl}</span></td></tr>`;
+  }).join('');
+
+  setBreadcrumb([{label:'APEX Group',fn:'goHome()'},{label:d.name,fn:"backToCompany()"},{label:dep.name}]);
+  showView('deptView');
+}
+
+function backToCompany() {
+  showView('companyView');
+  const d = DB[currentCo];
+  setBreadcrumb([{label:'APEX Group',fn:'goHome()'},{label:d.name}]);
+}
+
+function goHome() {
+  showView('groupView');
+  setBreadcrumb([{label:'APEX Group'}]);
+  document.getElementById('companyFilter').value = 'all';
+  currentCo = null; currentDeptIdx = null;
+}
+
+function setBreadcrumb(parts) {
+  const bc = document.getElementById('breadcrumb');
+  bc.innerHTML = parts.map((p, i) => {
+    if (p.fn) return `<a onclick="${p.fn}">${p.label}</a>`;
+    return `<span>${p.label}</span>`;
+  }).join('<span class="breadcrumb-sep"> › </span>');
+}
+
+function exportData() {
+  alert('Export to Excel\n\nThis will generate a formatted .xlsx report with:\n• Current filter selection\n• All visible metrics\n• Company breakdown table\n• Agency performance data\n\nIntegration with Olive backend API required to activate.');
+}
+</script>
+</body>
+</html>
